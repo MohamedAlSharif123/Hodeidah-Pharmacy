@@ -402,7 +402,7 @@
     <script>
         // --- Screen Management Logic ---
         function showScreen(screenId) {
-            console.log('Attempting to show screen:', screenId); // Debug log
+            console.log('Attempting to show screen:', screenId);
             const screens = document.querySelectorAll('.screen');
             screens.forEach(screen => {
                 screen.classList.remove('active');
@@ -411,9 +411,9 @@
             if (targetScreen) {
                 targetScreen.classList.add('active');
                 targetScreen.scrollTop = 0;
-                console.log(screenId + ' screen activated.'); // Debug log
+                console.log(screenId + ' screen activated.');
             } else {
-                console.error('Error: Screen with ID ' + screenId + ' not found.'); // Debug error
+                console.error('Error: Screen with ID ' + screenId + ' not found.');
             }
         }
 
@@ -464,207 +464,4 @@
             { question: "ما هو عدد البروتونات في ذرة الأكسجين (O) التي عددها الذري 8؟", options: ["6", "7", "8", "16"], correctAnswer: "8", subject: "كيمياء" },
             { question: "أي من التالي يعتبر قاعدة قوية؟", options: ["هيدروكسيد الصوديوم", "الأمونيا", "بيكربونات الصوديوم", "حمض الخليك"], correctAnswer: "هيدروكسيد الصوديوم", subject: "كيمياء" },
             { question: "ما هي الصيغة الكيميائية لثاني أكسيد الكربون؟", options: ["CO", "CO2", "C2O", "C2O2"], correctAnswer: "CO2", subject: "كيمياء" },
-            { question: "ما هو العنصر الذي يوجد في جميع المركبات العضوية؟", options: ["الأكسجين", "النيتروجين", "الكربون", "الهيدروجين"], correctAnswer: "الكربون", subject: "كيمياء" },
-
-            // --- أسئلة اللغة الإنجليزية (10 أسئلة) ---
-            { question: "Choose the correct sentence: 'She ___ to the store yesterday.'", options: ["go", "goes", "went", "going"], correctAnswer: "went", subject: "إنجليزي" },
-            { question: "What is the plural of 'child'?", options: ["childs", "children", "childes", "child's"], correctAnswer: "children", subject: "إنجليزي" },
-            { question: "Complete the sentence: 'I am looking ___ my keys.'", options: ["at", "for", "on", "in"], correctAnswer: "for", subject: "إنجليزي" },
-            { question: "Which word means the opposite of 'happy'?", options: ["joyful", "sad", "glad", "excited"], correctAnswer: "sad", subject: "إنجليزي" },
-            { question: "Choose the correct article: '___ apple a day keeps the doctor away.'", options: ["A", "An", "The", "No article"], correctAnswer: "An", subject: "إنجليزي" },
-            { question: "What is the past participle of 'eat'?", options: ["ate", "eaten", "eating", "eats"], correctAnswer: "eaten", subject: "إنجليزي" },
-            { question: "Identify the noun in the sentence: 'The cat slept soundly.'", options: ["The", "cat", "slept", "soundly"], correctAnswer: "cat", subject: "إنجليزي" },
-            { question: "Which word is a synonym for 'big'?", options: ["small", "tiny", "large", "little"], correctAnswer: "large", subject: "إنجليزي" },
-            { question: "Complete the sentence: 'He ___ English fluently.'", options: ["speak", "speaks", "speaking", "spoke"], correctAnswer: "speaks", subject: "إنجليزي" },
-            { question: "What is the capital of France?", options: ["Rome", "Berlin", "London", "Paris"], correctAnswer: "Paris", subject: "إنجليزي" }
-        ];
-
-        let currentQuestions = []; // Questions for the current exam
-        let currentQuestionIndex = 0;
-        let userAnswers = []; // To store user's selected options
-        let timerInterval;
-        const EXAM_DURATION_MINUTES = 60; // 60 minutes for the entire exam
-
-        const questionTextElement = document.getElementById('questionText');
-        const optionsContainer = document.getElementById('optionsContainer');
-        const examTimerDisplay = document.getElementById('examTimer');
-        const reviewContainer = document.getElementById('reviewContainer');
-
-        function startExam() {
-            alert('بدء الاختبار!'); // Simple alert to confirm function call
-            console.log('startExam function called.'); // Debug log
-            // Shuffle all questions before starting the exam
-            currentQuestions = shuffleArray([...allQuestions]);
-            console.log('Questions shuffled. Total:', currentQuestions.length); // Debug log
-
-            if (currentQuestions.length === 0) {
-                alert('عذراً، لا توجد أسئلة متاحة في الاختبار.');
-                console.error('No questions available in allQuestions array!');
-                return; // Stop execution if no questions
-            }
-
-            currentQuestionIndex = 0;
-            userAnswers = new Array(currentQuestions.length).fill(null); // Initialize with null for unanswered
-            
-            showScreen('examScreen');
-            loadQuestion();
-            startTimer(EXAM_DURATION_MINUTES * 60); // Convert minutes to seconds
-        }
-
-        function shuffleArray(array) {
-            console.log('Shuffling array...'); // Debug log
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
-            }
-            return array;
-        }
-
-        function loadQuestion() {
-            console.log('Loading question:', currentQuestionIndex); // Debug log
-            if (currentQuestionIndex >= 0 && currentQuestionIndex < currentQuestions.length) {
-                const question = currentQuestions[currentQuestionIndex];
-                questionTextElement.innerText = `${currentQuestionIndex + 1}. ${question.question}`;
-                optionsContainer.innerHTML = ''; // Clear previous options
-
-                question.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.classList.add('option-button');
-                    button.innerText = option;
-                    button.onclick = () => selectOption(index);
-                    if (userAnswers[currentQuestionIndex] === index) {
-                        button.classList.add('selected');
-                    }
-                    optionsContainer.appendChild(button);
-                });
-            } else {
-                console.error('Invalid question index for loading:', currentQuestionIndex); // Debug error
-            }
-        }
-
-        function selectOption(optionIndex) {
-            console.log('Option selected:', optionIndex, 'for question:', currentQuestionIndex); // Debug log
-            userAnswers[currentQuestionIndex] = optionIndex;
-            // Update UI to show selected option
-            const buttons = optionsContainer.querySelectorAll('.option-button');
-            buttons.forEach((btn, idx) => {
-                btn.classList.remove('selected');
-                if (idx === optionIndex) {
-                    btn.classList.add('selected');
-                }
-            });
-        }
-
-        function nextQuestion() {
-            console.log('Next question button clicked.'); // Debug log
-            if (currentQuestionIndex < currentQuestions.length - 1) {
-                currentQuestionIndex++;
-                loadQuestion();
-            } else {
-                // Reached end of questions, prompt to finish
-                confirmEndExam();
-            }
-        }
-
-        function prevQuestion() {
-            console.log('Previous question button clicked.'); // Debug log
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion();
-            }
-        }
-
-        function startTimer(duration) {
-            console.log('Starting timer with duration:', duration, 'seconds.'); // Debug log
-            let timer = duration;
-            let minutes, seconds;
-
-            clearInterval(timerInterval); // Clear any existing timer
-            timerInterval = setInterval(() => {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                examTimerDisplay.textContent = `الوقت المتبقي: ${minutes}:${seconds}`;
-
-                if (--timer < 0) {
-                    clearInterval(timerInterval);
-                    endExam(true); // End exam automatically when timer runs out
-                }
-            }, 1000);
-        }
-
-        function confirmEndExam() {
-            console.log('Confirm End Exam initiated.'); // Debug log
-            if (confirm("هل أنت متأكد أنك تريد إنهاء الاختبار؟")) {
-                endExam(false);
-            }
-        }
-
-        function endExam(timerExpired) {
-            console.log('Ending exam. Timer expired:', timerExpired); // Debug log
-            clearInterval(timerInterval);
-            calculateResults();
-            showScreen('resultsScreen');
-            if (timerExpired) {
-                alert("انتهى الوقت! تم إنهاء الاختبار تلقائياً.");
-            }
-        }
-
-        function calculateResults() {
-            console.log('Calculating results...'); // Debug log
-            let correctCount = 0;
-            let incorrectCount = 0;
-            let unansweredCount = 0;
-            reviewContainer.innerHTML = ''; // Clear previous review
-
-            currentQuestions.forEach((question, index) => {
-                const userAnswerIndex = userAnswers[index];
-                const correctAnswerText = question.correctAnswer;
-                const userAnswerText = userAnswerIndex !== null ? question.options[userAnswerIndex] : "لم يتم الإجابة";
-
-                const isCorrect = (userAnswerIndex !== null && question.options[userAnswerIndex] === correctAnswerText);
-
-                if (isCorrect) {
-                    correctCount++;
-                } else if (userAnswerIndex !== null) {
-                    incorrectCount++;
-                } else {
-                    unansweredCount++;
-                }
-
-                // Add to review section
-                const reviewItem = document.createElement('div');
-                reviewItem.classList.add('review-question-item');
-                if (!isCorrect && userAnswerIndex !== null) { // If answered but incorrect
-                    reviewItem.classList.add('incorrect-attempt');
-                }
-
-                reviewItem.innerHTML = `
-                    <p><strong>السؤال ${index + 1}:</strong> ${question.question}</p>
-                    <ul>
-                        <li>إجابتك: <span class="your-answer">${userAnswerText}</span></li>
-                        <li>الإجابة الصحيحة: <span class="correct-answer">${correctAnswerText}</span></li>
-                    </ul>
-                `;
-                reviewContainer.appendChild(reviewItem);
-            });
-
-            const totalQuestions = currentQuestions.length;
-            const scorePercentage = totalQuestions > 0 ? ((correctCount / totalQuestions) * 100).toFixed(2) + '%' : '0%';
-
-            document.getElementById('scorePercentage').innerText = scorePercentage;
-            document.getElementById('correctAnswersCount').innerText = correctCount;
-            document.getElementById('incorrectAnswersCount').innerText = incorrectCount;
-            document.getElementById('unansweredQuestionsCount').innerText = unansweredCount;
-        }
-
-        // Initialize the first screen on load
-        document.addEventListener('DOMContentLoaded', () => {
-            showScreen('mainScreen');
-        });
-    </script>
-</body>
-</html>
+            { question: "ما هو العنصر الذي يوجد في جميع المركبات العضوية؟", options: ["الأكسجين", "النيتروجين", "الكربون", "الهيدروجين"], c
